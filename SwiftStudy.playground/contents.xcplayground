@@ -3,5 +3,7 @@
     <pages>
         <page name='A Swift Tour'/>
         <page name='The Basic'/>
+        <page name='Basic Operators'/>
+        <page name='Strings and Characters'/>
     </pages>
 </playground>
