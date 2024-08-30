@@ -10,5 +10,6 @@
         <page name='Functions'/>
         <page name='Closures'/>
         <page name='Enumeration'/>
+        <page name='Structures and Classes'/>
     </pages>
 </playground>
