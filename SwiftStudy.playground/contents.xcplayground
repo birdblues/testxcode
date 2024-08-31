@@ -12,5 +12,6 @@
         <page name='Enumeration'/>
         <page name='Structures and Classes'/>
         <page name='Properties'/>
+        <page name='Methods'/>
     </pages>
 </playground>
