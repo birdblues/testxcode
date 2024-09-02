@@ -16,5 +16,6 @@
         <page name='Properties'/>
         <page name='Subscirpts'/>
         <page name='Initialization'/>
+        <page name='Deinitialization'/>
     </pages>
 </playground>
