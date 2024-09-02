@@ -270,7 +270,187 @@ for item in breakfastList {
 }
 
 //: ## 실패 가능한 초기화 구문
+//: init? init에서 return nil
+let wholeNumber: Double = 12345.0
+let pi = 3.141592
 
+if let valueMaintained = Int(exactly: wholeNumber) {
+    print("\(wholeNumber) conversion to Int maintains value of \(valueMaintained)")
+}
+
+let valueChanged = Int(exactly: pi)
+if valueChanged == nil {
+    print("\(pi) conversion to Int does not maintain value")
+}
+
+struct Animal {
+    let species: String
+    init?(species: String) {
+        if species.isEmpty { return nil }
+        self.species = species
+    }
+}
+let someCreature = Animal(species: "Giraffe")
+
+if let giraffe = someCreature {
+    print("An animal was initialized with a species of \(giraffe.species)")
+}
+let anonymousCreature = Animal(species: "")
+if anonymousCreature == nil {
+    print("The anonymous creature could not be initialized")
+}
+
+//: ### 열거형을 위한 실패 가능한 초기화 구문
+enum TemperatureUnit {
+    case kelvin, celsius, fahrenheit
+    init?(symbol: Character) {
+        switch symbol {
+        case "K":
+            self = .kelvin
+        case "C":
+            self = .celsius
+        case "F":
+            self = .fahrenheit
+        default:
+            return nil
+        }
+    }
+}
+let fahrenheitUnit = TemperatureUnit(symbol: "K")
+if fahrenheitUnit != nil {
+    print("This is a defined temperature unit, so initialization succeeded.")
+}
+
+let unknownUnit = TemperatureUnit(symbol: "X")
+if unknownUnit == nil {
+    print("This is not a defined temperature unit, so initialization failed.")
+}
+
+//: ### 원시값을 가진 열거형에 대한 실패 가능한 초기화 구문
+enum AnotherTemperatureUnit: Character {
+    case kelvin = "K", celsius = "C", fahrenheit = "F"
+}
+
+let anotherFahrenheitUnit = AnotherTemperatureUnit(rawValue: "F")
+if anotherFahrenheitUnit != nil {
+    print("This is a defined temperature unit, so initialization successed.")
+}
+
+let anotherUnkownUnit = AnotherTemperatureUnit(rawValue: "X")
+if anotherUnkownUnit == nil {
+    print("This is not a defined temperature unit, so initialization failed.")
+}
+
+//: ### 초기화 실패 전파
+class Product {
+    let name: String
+    init?(name: String) {
+        if name.isEmpty { return nil }
+        self.name = name
+    }
+}
+
+class CartItem: Product {
+    let quantity: Int
+    init?(name: String, quantity: Int) {
+        if quantity < 1 { return nil }
+        self.quantity = quantity
+        super.init(name: name)
+    }
+}
+
+if let twoSocks = CartItem(name: "sock", quantity: 2) {
+    print("Item: \(twoSocks.name) quantity: \(twoSocks.quantity)")
+}
+if let zeroShirts = CartItem(name: "shirt", quantity: 0) {
+    print("Item: \(zeroShirts.name), quantity: \(zeroShirts.quantity)")
+} else {
+    print("Unable to initialize zero shirts")
+}
+if let oneUnamed = CartItem(name: "", quantity: 1) {
+    print("Item: \(oneUnamed.name), quantity: \(oneUnamed.quantity)")
+} else {
+    print("Unable to initialize on unnamed product")
+}
+
+//: ### 실패 가능한 초기화 구문 재정의
+//: 실패 가능한 상위 클래스 초기화 구문을 실패 불가능한 하위 클래스 초기화 구문으로 재정의하면 상위 클래스 초기화 구문으로 위임하는 방법은 실패 가능한 상위 클래스 초기화 구문의 값을 강제로 언래핑 하는 것 뿐입니다.
+
+class Document {
+    var name: String?
+    init() {}
+    init?(name: String) {
+        if name.isEmpty { return nil }
+        self.name = name
+    }
+}
+
+class AutomaticallyNamedDocument: Document {
+    override init() {
+        super.init()
+        self.name = "[Untitled]"
+    }
+    override init(name: String) {
+        super.init()
+        if name.isEmpty {
+            self.name = "[Untitled]"
+        } else {
+            self.name = name
+        }
+    }
+}
+
+//: ### Init! 실패 가능한 초기화 구문
+class UntitledDocument: Document {
+    override init() {
+        super.init(name: "[Untitled]")! // 강제로 언레핑이 필요 그러나 항상 성공
+    }
+}
+
+
+//: ## 필수 초기화 구문
+class SomeClass {
+    required init() {
+        // initializer implementation goes here
+    }
+}
+
+class SomeSubClass: SomeClass {
+    required init() { // 지정된 필수 초기화 구문을 재정의 할 때 override 수식어를 작성하지 않습니다:
+        // subclass implementation of the required initializer goes here
+    }
+}
+
+//: ## 클로저 또는 합수를 사용하여 기본 프로퍼티 값 설정
+class SomeClosureClass {
+    let someProperty: Int = {
+        // create a default value for someProperty inside this closure
+        // someValue must be of the same type as SomeType
+        return 1
+    }() // ()는 클로저를 즉시 실행하도록 합니다.
+}
+
+struct Chessboard {
+    let boardColors: [Bool] = {
+        var temporaryBoard = [Bool]()
+        var isBlack = false
+        for i in 1...8 {
+            for j in 1...8 {
+                temporaryBoard.append(isBlack)
+                isBlack = !isBlack
+            }
+            isBlack = !isBlack
+        }
+        return temporaryBoard
+    }()
+    func squareIsBlackAt(row: Int, column: Int) -> Bool {
+        return boardColors[(row * 8) + column]
+    }
+}
+
+let board = Chessboard()
+print(board.squareIsBlackAt(row: 0, column: 1))
+print(board.squareIsBlackAt(row: 7, column: 7))
 
 
 //: [Next](@next)
